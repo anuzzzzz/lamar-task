@@ -33,7 +33,7 @@ class PrescriptionTests(TestCase):
     
     def test_name_must_have_letters(self):
         from django.core.exceptions import ValidationError
-        
+
         prescription = Prescription(
             patient_name="12345",  # No letters
             patient_dob=date(1990, 1, 1),
@@ -41,9 +41,28 @@ class PrescriptionTests(TestCase):
             medication_dose="10mg",
             medication_order_date=date.today()
         )
-        
+
         with self.assertRaises(ValidationError):
             prescription.save()
+
+    def test_duplicate_prescription_blocked(self):
+        from django.core.exceptions import ValidationError
+
+        Prescription.objects.create(
+            patient_name="John Doe",
+            patient_dob=date(1990, 1, 1),
+            medication_name="Humira",
+            medication_dose="40mg",
+            medication_order_date=date.today()
+        )
+        with self.assertRaises(ValidationError):
+            Prescription.objects.create(
+                patient_name="John Doe",
+                patient_dob=date(1990, 1, 1),
+                medication_name="Humira",
+                medication_dose="20mg",  # different dose, same patient+med+date
+                medication_order_date=date.today()
+            )
 
 
 class EventTests(TestCase):
