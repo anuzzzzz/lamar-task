@@ -1,0 +1,62 @@
+{% extends "workflow/base.html" %}
+{% block content %}
+    <div class="content-section">
+        <h2>Intake Queue</h2>
+        <p>Prescriptions ordered by most recent activity</p>
+        
+        {% if prescriptions %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Medication</th>
+                        <th>Status</th>
+                        <th>Last Activity</th>
+                        <th>By</th>
+                        <th>When</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prescription in prescriptions %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'prescription_detail' prescription.pk %}">
+                                <strong>{{ prescription.patient_name }}</strong>
+                            </a>
+                            <br>
+                            <small>DOB: {{ prescription.patient_dob }}</small>
+                        </td>
+                        <td>
+                            {{ prescription.medication_name }}<br>
+                            <small>{{ prescription.medication_dose }}</small>
+                        </td>
+                        <td>
+                            {{ prescription.get_status_display }}
+                        </td>
+                        <td>
+                            {% if prescription.latest_event %}
+                                {{ prescription.latest_event.get_event_type_display }}: 
+                                {{ prescription.latest_event.description|truncatewords:10 }}
+                            {% else %}
+                                No events yet
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if prescription.latest_event %}
+                                {{ prescription.latest_event.performed_by }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ prescription.updated_at|timesince }} ago
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No prescriptions in queue yet. <a href="/admin/">Create one in admin</a>.</p>
+        {% endif %}
+    </div>
+{% endblock %}

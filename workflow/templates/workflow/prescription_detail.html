@@ -1,0 +1,94 @@
+
+{% extends "workflow/base.html" %}
+{% block content %}
+
+    <!-- Prescription Header -->
+    <div class="content-section">
+        <h2>{{ prescription.patient_name }}</h2>
+        <a href="{% url 'dashboard' %}">← Back to Dashboard</a>
+        <hr>
+        
+        <!-- Two Column Layout -->
+        <div style="display: flex; gap: 40px;">
+            <!-- Left: Patient Info -->
+            <div style="flex: 1;">
+                <h4>Patient Information</h4>
+                <p><strong>Date of Birth:</strong> {{ prescription.patient_dob }}</p>
+                <p><strong>Phone:</strong> {{ prescription.patient_phone|default:"Not provided" }}</p>
+            </div>
+            
+            <!-- Right: Medication Info -->
+            <div style="flex: 1;">
+                <h4>Medication Information</h4>
+                <p><strong>Medication:</strong> {{ prescription.medication_name }}</p>
+                <p><strong>Dose:</strong> {{ prescription.medication_dose }}</p>
+                <p><strong>Order Date:</strong> {{ prescription.medication_order_date }}</p>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <!-- Status -->
+        <p><strong>Status:</strong> {{ prescription.get_status_display }}</p>
+    </div>
+
+    <!-- Rest stays the same... -->
+    <div class="content-section">
+        <h4>Add New Event</h4>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: green;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div style="display: flex; gap: 20px;">
+                <p style="flex: 1;">
+                    <label>Your Name/Initials:</label><br>
+                    <input type="text" name="performed_by" required placeholder="e.g., JD" style="width: 100%;">
+                </p>
+                
+                <p style="flex: 1;">
+                    <label>Event Type:</label><br>
+                    <select name="event_type" required style="width: 100%;">
+                        {% for value, label in event_types %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+            </div>
+            
+            <p>
+                <label>Description:</label><br>
+                <textarea name="description" rows="4" required placeholder="What happened?" style="width: 100%;"></textarea>
+            </p>
+            
+            <button type="submit">Add Event</button>
+        </form>
+    </div>
+
+    <!-- Event Timeline -->
+    <div class="content-section">
+        <h4>Activity Timeline</h4>
+        
+        {% if events %}
+            {% for event in events %}
+                <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px;">
+                    <p>
+                        <strong>{{ event.get_event_type_display }}</strong> 
+                        by {{ event.performed_by }}
+                        <br>
+                        <small>{{ event.created_at|date:"M d, Y - g:i A" }}</small>
+                    </p>
+                    <p>{{ event.description }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No events recorded yet. Add the first event above!</p>
+        {% endif %}
+    </div>
+
+{% endblock %}
