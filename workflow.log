@@ -10,3 +10,8 @@ INFO 2025-11-27 20:34:44,902 Dashboard accessed - 2 prescriptions
 INFO 2025-11-27 20:35:30,113 Dashboard accessed - 2 prescriptions
 INFO 2025-11-27 20:36:47,920 Event added: NOTE by JD for prescription 1
 INFO 2025-11-27 20:36:47,922 Dashboard accessed - 1 prescriptions
+INFO 2025-11-27 20:54:48,060 Event added: NOTE by JD for prescription 1
+INFO 2025-11-27 20:54:48,061 Dashboard accessed - 1 prescriptions
+INFO 2025-11-27 20:55:09,525 Dashboard accessed - 2 prescriptions
+INFO 2025-11-27 20:55:53,991 Event added: STATUS by Steve for prescription 3
+INFO 2025-11-27 20:55:56,153 Dashboard accessed - 2 prescriptions

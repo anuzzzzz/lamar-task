@@ -4,9 +4,6 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 import re
 
-# Create your models here.
-
-
 class Prescription(models.Model):
     STATUS_CHOICES = [
         ('NEW', 'New'),
@@ -18,13 +15,13 @@ class Prescription(models.Model):
 
     patient_name = models.CharField(max_length=255)
     patient_dob = models.DateField()
-    patient_phone = models.CharField(max_length=20, blank=True)  # Fixed: blank=True instead of null=True
-    medication_name = models.CharField(max_length=100)  # Fixed: max_length (was max_lenth)
-    medication_dose = models.CharField(max_length=100)  # Fixed: max_length (was max_lenth)
+    patient_phone = models.CharField(max_length=20, blank=True)
+    medication_name = models.CharField(max_length=100)
+    medication_dose = models.CharField(max_length=100)
     medication_order_date = models.DateField()
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='NEW')
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)  # Fixed: auto_now (was auto_add)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-updated_at']
@@ -65,7 +62,7 @@ class Prescription(models.Model):
     
 class Event(models.Model):
     EVENT_TYPES = [
-        ('NOTE', 'Note'),  # Fixed: added missing commas
+        ('NOTE', 'Note'),
         ('INS', 'Insurance call'),
         ('STATUS', 'Status Change'),
         ('OTHER', 'Other'),
@@ -78,8 +75,8 @@ class Event(models.Model):
     )
 
     performed_by = models.CharField(max_length=50)
-    event_type = models.CharField(max_length=100, choices=EVENT_TYPES, default='NOTE')  # Fixed: removed extra parentheses
-    description = models.TextField()  # Fixed: models.TextField() instead of models.description
+    event_type = models.CharField(max_length=100, choices=EVENT_TYPES, default='NOTE')
+    description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -97,12 +94,10 @@ class Event(models.Model):
             if self.performed_by.strip().isdigit():
                 raise ValidationError({'performed_by': 'Name cannot have digits'})
     
-    def save(self, *args, **kwargs):  
-        """Override save to enforce validation and update prescription timestamp."""
+    def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-        # Trigger prescription update so it moves to top of queue
-        self.prescription.save()
+        self.prescription.save()  # update prescription timestamp for queue ordering
     
     def __str__(self):
         return f"{self.event_type} by {self.performed_by}"
